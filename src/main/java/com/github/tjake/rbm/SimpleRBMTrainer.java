@@ -24,6 +24,7 @@ public class SimpleRBMTrainer
         this.layerFactory = layerFactory;
     }
 
+    // 실제로 러닝이 일어나는 부분
     public double learn(final SimpleRBM rbm, List<Layer> inputBatch, boolean reverse)
     {
         int batchsize = inputBatch.size();
@@ -46,12 +47,12 @@ public class SimpleRBMTrainer
             gh.clear();
         }
         
-        // Contrastive Divergance
-        for (Layer input : inputBatch)
+        // Contrastive Divergance:: 실제 러닝
+        for (Layer input : inputBatch) //30개의 인풋 배치에 속하는 각각의 인풋에 대해
         {
             try {
                 Iterator<Tuple> it = reverse ? rbm.reverseIterator(input) : rbm.iterator(input);
-
+                //마르코프 체인부분인것 같음
                 Tuple t1 = it.next();    //UP
                 Tuple t2 = it.next();    //Down
 
@@ -80,7 +81,7 @@ public class SimpleRBMTrainer
 
                 gw[i].mult(j, 1 - momentum);
                 gw[i].add(j,  momentum * (gw[i].get(j) - l2*rbm.weights[i].get(j)));
-                
+                //웨이트 수정
                 rbm.weights[i].add(j, learningRate * gw[i].get(j));
             }
         }
@@ -95,7 +96,7 @@ public class SimpleRBMTrainer
 
             gv.mult(i, 1 - momentum);
             gv.add(i, momentum * (gv.get(i) * rbm.biasVisible.get(i)));
-
+            //비지블 바이어스도 수정함
             rbm.biasVisible.add(i, learningRate * gv.get(i));
         }
 

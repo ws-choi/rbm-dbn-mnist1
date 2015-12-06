@@ -22,6 +22,23 @@ public class Demo {
 
             BinaryMinstRBM.start(labels,images);
         }
+
+        else if (args[0].equalsIgnoreCase("nca")) {
+            File labels = new File(args[1]);
+            File images = new File(args[2]);
+
+
+            if (!labels.isFile())
+                usage("invalid minst labels file: "+args[1]);
+
+            if (!images.isFile())
+                usage("invalid minst images file: "+args[2]);
+
+            MinistNCA.pretraining(labels,images);
+
+            MinistNCA.finetuning(labels,images);
+        }
+
         else if (args[0].equalsIgnoreCase("dbn")) {
             File labels = new File(args[1]);
             File images = new File(args[2]);

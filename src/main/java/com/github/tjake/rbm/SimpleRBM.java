@@ -21,7 +21,7 @@ public class SimpleRBM
     Random rand;
     static Long randomSeed;
 
-    protected float scale = 0.001f;
+    protected float scale = 0.01f; //revisited
     boolean gaussianVisibles = false;
 
     public static void setRandomSeed(long seed)
@@ -127,6 +127,10 @@ public class SimpleRBM
         return workingHidden;
     }
 
+    public Iterator<Tuple> iterator(Layer visible) {
+        return iterator(visible, new Tuple.Factory(visible));
+    }
+
     // Given hidden states, return the expected visible unit values.
     public Layer activateVisible(final Layer hidden, final Layer bias)
     {
@@ -154,10 +158,6 @@ public class SimpleRBM
         }
 
         return workingVisible;
-    }
-
-    public Iterator<Tuple> iterator(Layer visible) {
-        return iterator(visible, new Tuple.Factory(visible));
     }
 
     public Iterator<Tuple> reverseIterator(Layer visible) {

@@ -73,14 +73,14 @@ public class BinaryMinstRBM extends Canvas {
     public void update() {
         learn();
         Iterator<Tuple> it = evaluate();
-
+        //다시 그리는 것 같음
         synchronized (outputs) {
             outputs.clear();
             for (int j = 0; j < 10; j++) {
                 Tuple t = it.next();
                 int[] output = new int[t.visible.size()];
                 float[] visible = BinaryLayer.fromBinary(t.visible);
-
+//9개 다시그리기
                 for (int i = 0; i < visible.length; i++) {
                     output[i] = Math.round(visible[i]);
                 }
@@ -88,7 +88,7 @@ public class BinaryMinstRBM extends Canvas {
                 outputs.add(output);
             }
         }
-        repaint();
+        repaint(); //다시그림
     }
 
     public void paint(Graphics g) {
@@ -184,8 +184,8 @@ public class BinaryMinstRBM extends Canvas {
             try {
                 count++;
 
-                if (count > 1000)
-                    Thread.sleep(2000);
+                if (count > 100)
+                    Thread.sleep(400);
 
             } catch (InterruptedException e) {
             }

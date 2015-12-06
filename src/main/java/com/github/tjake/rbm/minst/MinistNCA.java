@@ -1,24 +1,25 @@
 package com.github.tjake.rbm.minst;
 
-
 import com.github.tjake.rbm.*;
 
+import javax.swing.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class BinaryMinstDBN {
-    static MinstDatasetReader dr;
+public class MinistNCA {
+    public static MinstDatasetReader dr;
     StackedRBM rbm;
     final StackedRBMTrainer trainer;
     final LayerFactory layerFactory = new LayerFactory();
 
-    public BinaryMinstDBN(File labels, File images) {
+    public MinistNCA(File labels, File images) {
         dr = new MinstDatasetReader(labels, images);
 
         rbm = new StackedRBM();
-        trainer = new StackedRBMTrainer(rbm, 0.5f, 0.001f, 0.2f, 0.2f, layerFactory);
+        trainer = new StackedRBMTrainer(rbm, 0.9f, 0.001f, 0.2f, 0.1f, layerFactory);
+        //TODO: decay weights were initialized with small random values sampled from a zero ND with variance 0.01
     }
 
     void learn(int iterations, boolean addLabels, int stopAt) {
@@ -30,7 +31,7 @@ public class BinaryMinstDBN {
             List<Layer> labelBatch = addLabels ? new ArrayList<Layer>() : null;
 
 
-            for (int j = 0; j < 30; j++) {
+            for (int j = 0; j < 100; j++) {
                 MinstItem trainItem = dr.getTrainingItem();
                 Layer input = layerFactory.create(trainItem.data.length);
 
@@ -89,12 +90,17 @@ public class BinaryMinstDBN {
     }
 
 
-    public static void start(File labels, File images, File saveto) {
+    public static void pretraining(File labels, File images) {
 
-        BinaryMinstDBN m = new BinaryMinstDBN(labels,images);
+        //revisited
+//        BinaryMinstDBN m = new BinaryMinstDBN(labels,images);
+        MinistNCA m = new MinistNCA(labels, images);
+
+        (new VisualFrame(m)).setVisible(true);
 
         boolean prevStateLoaded = false;
 
+/*
         if (saveto.exists()){
             try {
                 DataInput input = new DataInputStream(new BufferedInputStream(new FileInputStream(saveto)));
@@ -106,19 +112,33 @@ public class BinaryMinstDBN {
             }
         }
 
+*/
 
         if (!prevStateLoaded) {
             int numIterations = 1000;
+//          int numIterations = 1000; revisited
 
-            m.rbm.setLayerFactory(m.layerFactory).addLayer(dr.rows * dr.cols, false).addLayer(500, false).addLayer(500, false).addLayer(2000, false).withCustomInput(510).build();
+            m.rbm.setLayerFactory(m.layerFactory).
+                    addLayer(dr.rows * dr.cols, false).
+                    addLayer(500, false).
+                    addLayer(500, false).
+                    addLayer(2000, false).
+                    addLayer(30, false).
+                    build();
 
             System.err.println("Training level 1");
             m.learn(numIterations, false, 1);
             System.err.println("Training level 2");
             m.learn(numIterations, false, 2);
             System.err.println("Training level 3");
-            m.learn(numIterations, true, 3);
+            m.learn(numIterations, false, 3);
+            System.err.println("Training level 4");
+            m.learn(numIterations, false, 4);
 
+            System.out.println();
+
+
+/*
             try {
                 DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(saveto)));
                 m.rbm.save(out);
@@ -128,9 +148,10 @@ public class BinaryMinstDBN {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+*/
         }
-
         double numCorrect = 0;
+
         double numWrong = 0;
         double numAlmost = 0.0;
 
@@ -185,5 +206,8 @@ public class BinaryMinstDBN {
             System.err.println("Error Rate = " + ((numWrong / (numAlmost + numCorrect + numWrong)) * 100));
 
         }
+    }
+
+    public static void finetuning(File labels, File images) {
     }
 }

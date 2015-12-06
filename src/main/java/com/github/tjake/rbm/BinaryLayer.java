@@ -11,7 +11,7 @@ public class BinaryLayer extends Layer {
 
     public BinaryLayer(Layer delegate)
     {
-        super(null);
+         super(null);
         this.delegate = delegate;
 
         convertToBinary();
