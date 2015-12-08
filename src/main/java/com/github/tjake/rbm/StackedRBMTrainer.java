@@ -1,11 +1,12 @@
 package com.github.tjake.rbm;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-public class StackedRBMTrainer {
+public class StackedRBMTrainer implements Serializable {
 
     final StackedRBM stackedRBM;
     final SimpleRBMTrainer inputTrainer;

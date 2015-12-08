@@ -5,12 +5,13 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-public class StackedRBM extends SimpleRBM {
+public class StackedRBM extends SimpleRBM implements Serializable {
 
     private LayerFactory layerFactory;
     private List<Integer> layerSizes;

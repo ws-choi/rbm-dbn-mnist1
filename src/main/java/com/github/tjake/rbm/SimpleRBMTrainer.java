@@ -1,10 +1,11 @@
 package com.github.tjake.rbm;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
-public class SimpleRBMTrainer
-{
+public class SimpleRBMTrainer implements Serializable {
+
     public float momentum;
     final float l2;
     final Float targetSparsity;

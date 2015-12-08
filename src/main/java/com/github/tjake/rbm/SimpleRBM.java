@@ -5,12 +5,13 @@ import com.github.tjake.util.Utilities;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Random;
 
-public class SimpleRBM
-{
+public class SimpleRBM implements Serializable {
+    
     // biases and weights
     public Layer biasVisible;
     public Layer biasHidden;

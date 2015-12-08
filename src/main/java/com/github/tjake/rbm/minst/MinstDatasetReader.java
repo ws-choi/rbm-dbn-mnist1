@@ -1,11 +1,6 @@
 package com.github.tjake.rbm.minst;
 
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOError;
-import java.io.IOException;
+import java.io.*;
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.zip.GZIPInputStream;
@@ -20,8 +15,9 @@ public class MinstDatasetReader implements Enumeration<MinstItem>
 
     SecureRandom r = new SecureRandom();
 
-    final Map<String, List<MinstItem>> trainingSet = new HashMap<String, List<MinstItem>>();
-    final Map<String, List<MinstItem>> testSet = new HashMap<String, List<MinstItem>>();
+    public final List<MinstItem> training_set = new ArrayList<MinstItem>();
+    public final Map<String, List<MinstItem>> trainingSet = new HashMap<String, List<MinstItem>>();
+    public final Map<String, List<MinstItem>> testSet = new HashMap<String, List<MinstItem>>();
 
     int rows = 0;
     int cols = 0;
@@ -58,13 +54,14 @@ public class MinstDatasetReader implements Enumeration<MinstItem>
     }
 
     public void createTrainingSet() {
-        boolean done = false;
-
-        while (!done || !hasMoreElements()) {
+       /* boolean done = false;
+        int size = 0;*/
+        while (hasMoreElements()) {
             MinstItem i = nextElement();
 
-            if (r.nextDouble() > 0.3) {
-                List<MinstItem> l = testSet.get(i.label);
+            if (r.nextDouble() > 0.857142857 || training_set.size()>=50000) {
+
+                List<MinstItem>  l = testSet.get(i.label);
                 if (l == null)
                     l = new ArrayList<MinstItem>();
                 testSet.put(i.label, l);
@@ -75,14 +72,16 @@ public class MinstDatasetReader implements Enumeration<MinstItem>
                 if (l == null)
                     l = new ArrayList<MinstItem>();
                 trainingSet.put(i.label, l);
-
+                training_set.add(i);
                 l.add(i);
             }
 
+/*
             if (trainingSet.isEmpty())
                 continue;
+*/
 
-            boolean isDone = true;
+/*            boolean isDone = true;
             for (Map.Entry<String, List<MinstItem>> entry : trainingSet.entrySet()) {
                 if (entry.getValue().size() < 100) {
                     isDone = false;
@@ -90,8 +89,9 @@ public class MinstDatasetReader implements Enumeration<MinstItem>
                 }
             }
 
-            done = isDone;
+            done = isDone;*/
         }
+
     }
 
     public MinstItem getTestItem()
@@ -100,6 +100,22 @@ public class MinstDatasetReader implements Enumeration<MinstItem>
         return list.get(r.nextInt(list.size()));
 
     }
+
+    public Iterator<MinstItem> iterator () {
+        Collections.shuffle(training_set);
+        return training_set.iterator();
+    }
+
+
+
+/*
+    public MinstItem removeTrainingItem(){
+        MinstItem item = getTrainingItem(ran);
+        trainingSet.get(String.valueOf(item.label)).remove(item);
+        return item;
+
+    }
+*/
 
     public MinstItem getTrainingItem()
     {

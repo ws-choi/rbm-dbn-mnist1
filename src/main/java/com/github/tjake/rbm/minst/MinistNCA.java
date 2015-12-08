@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class MinistNCA {
+public class MinistNCA implements Serializable{
     public static MinstDatasetReader dr;
     StackedRBM rbm;
     final StackedRBMTrainer trainer;
@@ -21,6 +21,49 @@ public class MinistNCA {
         trainer = new StackedRBMTrainer(rbm, 0.9f, 0.001f, 0.2f, 0.1f, layerFactory);
         //TODO: decay weights were initialized with small random values sampled from a zero ND with variance 0.01
     }
+
+    void learn_epoch (int epoch, int mini_batch_size, boolean addLabels, int stopAt) {
+
+        for (int e = 0; e < epoch; e++) {
+
+            Iterator<MinstItem> iter = dr.iterator();
+            // Get random input
+            double error=0;
+            while(iter.hasNext()) {
+
+                error = minibatch(mini_batch_size, iter, addLabels, stopAt);
+
+            }
+
+
+            System.err.println("Epoch: " + e +", Error = " + error+", Energy = "+rbm.freeEnergy());
+        }
+    }
+
+    private double minibatch(int mini_batch_size, Iterator<MinstItem> iter, boolean addLabels, int stopAt) {
+
+        List<Layer> inputBatch = new ArrayList<Layer>();
+        List<Layer> labelBatch = addLabels ? new ArrayList<Layer>() : null;
+        int size = 0;
+
+        while(iter.hasNext() && size < mini_batch_size){
+
+            MinstItem trainItem = iter.next();
+            Layer input = layerFactory.create(trainItem.data.length);
+
+            for (int i = 0; i < trainItem.data.length; i++)
+                input.set(i, trainItem.data[i]);
+
+            inputBatch.add(new BinaryLayer(input));
+            size++;
+        }
+
+        return trainer.learn(inputBatch, labelBatch, stopAt);
+
+
+
+    }
+
 
     void learn(int iterations, boolean addLabels, int stopAt) {
 
@@ -96,9 +139,7 @@ public class MinistNCA {
 //        BinaryMinstDBN m = new BinaryMinstDBN(labels,images);
         MinistNCA m = new MinistNCA(labels, images);
 
-        (new VisualFrame(m)).setVisible(true);
-
-        boolean prevStateLoaded = false;
+         boolean prevStateLoaded = false;
 
 /*
         if (saveto.exists()){
@@ -115,7 +156,7 @@ public class MinistNCA {
 */
 
         if (!prevStateLoaded) {
-            int numIterations = 1000;
+            int numIterations = 50;
 //          int numIterations = 1000; revisited
 
             m.rbm.setLayerFactory(m.layerFactory).
@@ -135,21 +176,65 @@ public class MinistNCA {
             System.err.println("Training level 4");
             m.learn(numIterations, false, 4);
 
-            System.out.println();
+        }
+    }
 
+    public  void pretraining () {
+
+        boolean prevStateLoaded = false;
 
 /*
+        if (saveto.exists()){
             try {
-                DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(saveto)));
-                m.rbm.save(out);
+                DataInput input = new DataInputStream(new BufferedInputStream(new FileInputStream(saveto)));
+                m.rbm.load(input, m.layerFactory);
+                prevStateLoaded = true;
 
-                out.flush();
-                out.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+
+*/
+
+        if (!prevStateLoaded) {
+            int numIterations = 50;
+//          int numIterations = 1000; revisited
+
+            rbm.setLayerFactory(layerFactory).
+                    addLayer(dr.rows * dr.cols, false).
+                    addLayer(500, false).
+                    addLayer(500, false).
+                    addLayer(2000, false).
+                    addLayer(30, false).
+                    build();
+
+            System.err.println("Training level 1");
+            learn_epoch(numIterations, 100, false, 1);
+            learn(numIterations, false, 1);
+            System.err.println("Training level 2");
+            learn_epoch(numIterations, 100, false, 2);
+            System.err.println("Training level 3");
+            learn_epoch(numIterations, 100, false, 3);
+            System.err.println("Training level 4");
+            learn_epoch(numIterations, 100, false, 4);
+
+
+           /* System.err.println("Training level 1");
+            learn(numIterations, false, 1);
+            System.err.println("Training level 2");
+            learn(numIterations, false, 2);
+            System.err.println("Training level 3");
+            learn(numIterations, false, 3);
+            System.err.println("Training level 4");
+            learn(numIterations, false, 4);
+
 */
         }
+    }
+
+
+    public static void test(MinistNCA m) {
         double numCorrect = 0;
 
         double numWrong = 0;
@@ -209,5 +294,19 @@ public class MinistNCA {
     }
 
     public static void finetuning(File labels, File images) {
+    }
+
+    public void save_to_file(String s) {
+
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File(s)));
+            oos.writeObject(this);
+            oos.flush();;
+            oos.close();
+            System.out.println("output: " + s);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }

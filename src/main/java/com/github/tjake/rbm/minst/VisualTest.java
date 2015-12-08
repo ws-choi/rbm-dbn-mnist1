@@ -7,6 +7,10 @@ import com.github.tjake.rbm.Tuple;
 import com.github.tjake.util.Utilities;
 
 import java.awt.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.Iterator;
 
 public class VisualTest extends Canvas{
@@ -26,6 +30,7 @@ public class VisualTest extends Canvas{
     public void loaddata() {
 
         item = nca.dr.getTestItem();
+        iter = null;
         repaint();;
     }
 
@@ -83,34 +88,13 @@ public class VisualTest extends Canvas{
         Tuple t = iter.next();
 
         Layer v = t.visible;
+
+        float[] visible = BinaryLayer.fromBinary(t.visible);
+
         for (int i = 0; i < 28*28; i++) {
 
-            item.data[i] = (Math.random() < v.get(i) ) ? 40: 0;
+            item.data[i] = ( visible[i] > 40 ) ? 40: 0;
         }
-
-        System.out.println();
-
-
-/*
-        Layer input = nca.layerFactory.create(item.data.length);
-
-        for (int i = 0; i < item.data.length; i++)
-            input.set(i, item.data[i]);
-
-        input = new BinaryLayer(input);
-
-        SimpleRBM s_rbm = nca.rbm.getInnerRBMs().get(0);
-
-        Layer hidden_1  = s_rbm.activateHidden(input, s_rbm.biasHidden);
-        Layer visible_2 = s_rbm.activateVisible(hidden_1, s_rbm.biasVisible);
-
-        int size = visible_2.size();
-
-        for (int i = 0; i < size; i++) {
-
-            item.data[i] = (Math.random() > visible_2.get(i) ) ? 1: 0;
-        }
-*/
 
         repaint();;
 
@@ -124,5 +108,29 @@ public class VisualTest extends Canvas{
         }
         input = new BinaryLayer(input);
         return input;
+    }
+
+    public void test() {
+        nca.test(nca);
+    }
+
+    public void save_to_file() {
+        nca.save_to_file("nca.obj");
+    }
+
+    public void load_from_file() {
+        try {
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(new File("nca.obj")));
+            try {
+                nca = (MinistNCA) ois.readObject();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            ois.close();
+            System.out.println("success");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

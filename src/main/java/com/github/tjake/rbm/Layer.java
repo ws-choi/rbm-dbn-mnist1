@@ -1,11 +1,12 @@
 package com.github.tjake.rbm;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
  * Represents a layer in nodes in a Neural network, supports some simple operations
  */
-public class Layer {
+public class Layer implements Serializable {
 
     final float[] layer;
 

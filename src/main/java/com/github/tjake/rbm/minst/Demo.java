@@ -24,9 +24,13 @@ public class Demo {
         }
 
         else if (args[0].equalsIgnoreCase("nca")) {
+
             File labels = new File(args[1]);
             File images = new File(args[2]);
 
+            MinistNCA m = new MinistNCA(labels, images);
+
+            (new VisualFrame(m)).setVisible(true);
 
             if (!labels.isFile())
                 usage("invalid minst labels file: "+args[1]);
@@ -34,9 +38,6 @@ public class Demo {
             if (!images.isFile())
                 usage("invalid minst images file: "+args[2]);
 
-            MinistNCA.pretraining(labels,images);
-
-            MinistNCA.finetuning(labels,images);
         }
 
         else if (args[0].equalsIgnoreCase("dbn")) {

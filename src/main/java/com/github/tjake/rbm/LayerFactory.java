@@ -5,9 +5,10 @@ import java.awt.image.BufferedImage;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
 
-public class LayerFactory {
+public class LayerFactory implements Serializable {
     public static byte[] MAGIC = {(byte) 0xf0, (byte) 0x0d, (byte) 0x00, (byte) 0x0F};
 
     public Layer create(int size) {
