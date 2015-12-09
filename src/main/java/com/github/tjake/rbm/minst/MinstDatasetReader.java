@@ -8,7 +8,7 @@ import java.util.zip.GZIPInputStream;
 /**
  * Reads the Minst image data from
  */
-public class MinstDatasetReader implements Enumeration<MinstItem>
+public class MinstDatasetReader implements Enumeration<MinstItem>, Serializable
 {
     final DataInputStream labelsBuf;
     final DataInputStream imagesBuf;

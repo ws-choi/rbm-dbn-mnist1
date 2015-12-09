@@ -22,6 +22,8 @@ public class MinistNCA implements Serializable{
         //TODO: decay weights were initialized with small random values sampled from a zero ND with variance 0.01
     }
 
+
+
     void learn_epoch (int epoch, int mini_batch_size, boolean addLabels, int stopAt) {
 
         for (int e = 0; e < epoch; e++) {
@@ -309,4 +311,7 @@ public class MinistNCA implements Serializable{
         }
 
     }
+
+
+
 }

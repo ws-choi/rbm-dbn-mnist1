@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 /**
  * Created by wschoi on 2015-12-06.
@@ -11,14 +12,18 @@ import java.awt.event.ActionListener;
 public class VisualFrame extends JFrame {
 
     VisualTest vt;
-    JButton pretraining, load_data,reconstruct, test, save_to_file, load_from_file;
+    JButton pretraining, load_data,reconstruct, test, save_to_file, load_from_file, error_test;
+    File labels, images;
 
-    public VisualFrame(MinistNCA nca) {
+    public VisualFrame(MinistNCA nca, final File labels, final File images) {
 
         super("MINST Draw");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         vt = new VisualTest(nca);
+        this.labels=labels;
+        this.images=images;
+
         add(vt);
 
         pretraining = new JButton("pre_training");
@@ -26,7 +31,7 @@ public class VisualFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                vt.nca.pretraining();
+//                vt.nca.pretraining();
             }
         });
 
@@ -69,7 +74,15 @@ public class VisualFrame extends JFrame {
         load_from_file.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                vt.load_from_file();
+                vt.load_from_file(labels, images);
+            }
+        });
+
+        error_test = new JButton("Error Test");
+        error_test.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                vt.error_test();
             }
         });
 
@@ -80,6 +93,7 @@ public class VisualFrame extends JFrame {
         bottom.add(test);
         bottom.add(save_to_file);
         bottom.add(load_from_file);
+        bottom.add(error_test);
 
         add(bottom, BorderLayout.SOUTH);
 

@@ -30,7 +30,7 @@ public class Demo {
 
             MinistNCA m = new MinistNCA(labels, images);
 
-            (new VisualFrame(m)).setVisible(true);
+            (new VisualFrame(m, labels, images)).setVisible(true);
 
             if (!labels.isFile())
                 usage("invalid minst labels file: "+args[1]);
