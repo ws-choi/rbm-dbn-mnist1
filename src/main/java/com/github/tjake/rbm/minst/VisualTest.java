@@ -168,42 +168,9 @@ public class VisualTest extends Canvas{
 
     public void error_test() {
 
-//        Iterator
-    }
-
-
-/*    public void error_test() {
-        double numCorrect = 0;
-
-        double numWrong = 0;
-        double numAlmost = 0.0;
-
-        Iterator<MinstItem> iter = dr.training_set.iterator();
-        for (int loop = 0; loop < 5000; loop++) {
-
-            MinstItem trainingCase = iter.next();
-
-            Iterator<Tuple> it = evaluate(trainingCase);
-
-            float[] labeld = new float[10];
-
-            for (int i = 0; i < 2; i++) {
-                Tuple t = it.next();
-
-                for (int j = (t.visible.size() - 10), k = 0; j < t.visible.size() && k < 10; j++, k++) {
-                    labeld[k] += t.visible.get(j);
-                }
-            }
-
-            float max1 = 0.0f;
-            float max2 = 0.0f;
-            int p1 = -1;
-            int p2 = -1;
-
-            System.err.print("Label is: " + trainingCase.label);
-
-        }
+        nca.error_test();
 
     }
-    */
+
+
 }
